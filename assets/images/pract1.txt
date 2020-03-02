@@ -1,0 +1,95 @@
+create or replace procedure disp
+is
+begin
+dbms_output.put_line('Welcome to stored procedures');
+end;
+/
+
+
+create or replace procedure update_emp_sal
+(var_emp_id in emp_sal.emp_id%type)
+is
+var_emp_salary emp_sal.emp_salary%type;
+var number(8,2);
+begin
+select emp_salary into var_emp_salary from emp_sal
+where emp_id=var_emp_id;
+if(var_emp_salary>10000 and var_emp_salary<=20000) then
+var:=var_emp_salary+((12*var_emp_salary)/100);
+update emp_sal set emp_salary=var where emp_id=var_emp_id;
+elsif(var_emp_salary>20000 and var_emp_salary<=30000) then
+var:=var_emp_salary+((15*var_emp_salary)/100);
+update emp_sal set emp_salary=var where emp_id=var_emp_id;
+elsif(var_emp_salary>30000) then
+var:=var_emp_salary+((20*var_emp_salary)/100);
+
+update emp_sal set emp_salary=var where emp_id=var_emp_id;
+end if;
+
+end;
+
+create table emp_sal
+(emp_id varchar(5) not null unique,
+emp_salary number(10) not null);
+
+insert into emp_sal values('1',11000);
+insert into emp_sal values('2',25000);
+insert into emp_sal values('3',31000);
+insert into emp_sal values('4',17000);
+insert into emp_sal values('5',28000);
+
+declare
+var_id emp_details.emp_id%type;
+begin
+var_id:='&var_id';
+disp_emp_name(var_id);
+end;
+
+create or replace function addition
+(a in number,b in number)
+return number
+is
+c number(5);
+begin
+c:=a+b;
+return c;
+end;
+
+declare
+begin
+dbms_output.put_line('The employes with ');
+end;
+
+create table address_det
+(id number(5) not null unique,
+name varchar(20) not null,
+city varchar(10) not null);
+
+create or replace procedure city
+as
+v_id address_det.id%type;
+v_name address_det.name%type;
+v_city address_det.city%type;
+begin
+select * into v_id,v_name,v_city from address_det where city='mumbai';
+exception
+when too_many_rows then
+dbms_output.put_line('More than one employee with city mumbai exists.');
+end;
+
+
+
+create table EmpDetails
+(emp_no number(5),name varchar(15),salary number(7));
+
+create or replace trigger checksal
+BEFORE update or insert of salary on EmpDetails
+FOR EACH ROW
+DECLARE
+v_error varchar(2000);
+BEGIN
+IF(:NEW.salary>100000) THEN
+RAISE_APPLICATION_ERROR(-20999,v_error);
+END IF;
+END;
+
